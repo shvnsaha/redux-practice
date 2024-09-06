@@ -1,5 +1,6 @@
 
-import { useAppSelector } from "@/redux/hook";
+// import { useAppSelector } from "@/redux/hook";
+import { useState } from "react";
 import AddModal from "./AddModal";
 import TodoCard from "./TodoCard";
 import TodoFilter from "./TodoFilter";
@@ -7,25 +8,35 @@ import { useGetTodosQuery } from "@/redux/api/api";
 
 
 const TodoContainer = () => {
-    const {todos} = useAppSelector((state)=>state.todos)
+    // const {todos} = useAppSelector((state)=>state.todos)
+
+    const [priority,setPriority] = useState("")
+
+    
 
     // server
-    const {data,isLoading,isError} = useGetTodosQuery(undefined)
+    const {data:todos,isLoading,isError} = useGetTodosQuery(priority)
+
+
+    if(isLoading) {
+        return <p>Load....</p>
+    }
 
     return (
         <div>
             <div className="flex justify-between">
                 
                 <AddModal></AddModal>
-                <TodoFilter></TodoFilter>
+                <TodoFilter priority={priority} setPriority={setPriority}></TodoFilter>
             </div>
             <div className="bg-red-500 space-y-3 rounded-xl p-5">
                 {
-                    todos.map((item)=>(<TodoCard item={item}></TodoCard>))
+                    todos.length === 0 ?  <div className="bg-white p-5 flex justify-center text-2xl font-semibold items-center rounded-md">
+                    <p>There is no task pending...</p>
+                </div> :
+                     todos.data?.map((item)=>(<TodoCard key={item?._id} item={item}></TodoCard>))
                 }
-            {/* <div className="bg-white p-5 flex justify-center text-2xl font-semibold items-center rounded-md">
-                <p>There is no task pending...</p>
-            </div> */}
+           
              
             </div>
         </div>
